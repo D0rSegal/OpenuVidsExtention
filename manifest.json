@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Openu video tracker",
+    "version": "1.0",
+    "description": "Use to keep track of you viewed videos",
+    "permissions": ["activeTab"],
+    "content_scripts":[{
+        "matches":["https://opal.openu.ac.il/mod/ouilvideocollection/*"],
+        "js":["src/js/openu.js"]
+    }],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "src/html/popup.html",
+      "default_icon": {
+      }
+    }
+  }
+  
