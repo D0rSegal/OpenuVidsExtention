@@ -1,14 +1,32 @@
-.architect
-bootstrap.css
-bootstrap.js
-bootstrap.json
-bootstrap.jsonp
-build/
-classic.json
-classic.jsonp
-ext/
-modern.json
-modern.jsonp
-resources/sass/.sass-cache/
-resources/.arch-internal-preview.css
-.arch-internal-preview.css
+# VSCode specific files
+.vscode/
+*.code-workspace
+
+# User-specific settings
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Local history for Visual Studio Live Share
+.history/
+
+# Python-specific
+__pycache__/
+*.pyc
+
+# Node.js-specific
+node_modules/
+
+# TypeScript-specific
+*.tsbuildinfo
+
+# Compiled files
+dist/
+out/
+
+# macOS-specific files
+.DS_Store
+
+# Windows-specific files
+Thumbs.db
