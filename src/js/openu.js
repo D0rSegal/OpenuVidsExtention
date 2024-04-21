@@ -35,7 +35,7 @@ function createSeenElement(watched) {
 	return svg
 }
 
-function clickCallback(collectionId, itemId, watched) {
+function onClickCallback(collectionId, itemId, watched) {
 	//updating watched value to true
 	updateWatched(collectionId, itemId, watched);
 	let path2Item = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${itemId}`).children).filter(val => {
@@ -58,26 +58,30 @@ function appendViewdFeature(elements, collectionId) {
 		// create and append the view icon element
 		let itemId = val.id;
 		let watched = isWatched(collectionId, itemId)
-		let title = val.getElementsByClassName('ovc_playlist_title')[0];
-		let seenElement = createSeenElement(watched);
-		seenElement.id = `${ouvePrefix}_${collectionId}_${itemId}`;
+		seenElementId = `${ouvePrefix}_${collectionId}_${itemId}`;
 
-		title.style.setProperty('display', 'inline');
-		title.style.setProperty('margin-left', '10px');
+		if (!document.getElementById(seenElementId)) {
+			let title = val.getElementsByClassName('ovc_playlist_title')[0];
+			let seenElement = createSeenElement(watched);
+			seenElement.id = seenElementId;
+			title.style.setProperty('display', 'inline');
+			title.style.setProperty('margin-left', '10px');
 
-		//create listeners for click action, inner div clickable elements
-		let clickables = Array.from(val.children[0].children).filter(val => val.className.includes('clickable'));
-		clickables.forEach((val, index) => {
-			val.addEventListener('click', function () {
-				clickCallback(collectionId, itemId, true);
-			});
-		})
+			//create listeners for click action, inner div clickable elements
+			let clickables = Array.from(val.children[0].children).filter(val => { if (val.className.include) { return val.className.includes('clickable') } });
+			clickables.forEach((val, index) => {
+				val.addEventListener('click', function () {
+					onClickCallback(collectionId, itemId, true);
+				});
+			})
 
-		seenElement.addEventListener('click', function () {
-			clickCallback(collectionId, itemId, !isWatched(collectionId, itemId));
-		})
-		// title.appendChild(seenElement);
-		title.insertAdjacentElement('afterend', seenElement);
+			seenElement.addEventListener('click', function () {
+				onClickCallback(collectionId, itemId, !isWatched(collectionId, itemId));
+			})
+			// title.appendChild(seenElement);
+			title.insertAdjacentElement('afterend', seenElement);
+		}
+
 	});
 }
 
@@ -110,7 +114,7 @@ function updateWatched(collectionId, itemId, val) {
 	localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
 }
 
-function run(collection) {
+function updateCollection(collection) {
 	let collectionId = collection.id;
 	initLocalStorage(collection);
 
@@ -123,11 +127,23 @@ function getCollectionElements() {
 	return b.filter(val => val.id.startsWith('collection'));
 }
 
-function main() {
+function runOverCollections() {
 	let collectionElements = getCollectionElements();
 	collectionElements.forEach((collection, index) => {
-		run(collection)
+		updateCollection(collection)
 	})
 }
 
-main()
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+Array.from(document.getElementById('ovc_collections_list').children).forEach((val, index) => {
+	val.addEventListener('click', function () {
+		sleep(500).then(() => {
+			runOverCollections();
+		});
+	});
+})
+
+runOverCollections()
