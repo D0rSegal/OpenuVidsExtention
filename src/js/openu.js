@@ -11,25 +11,25 @@ function createSeenElement(watched) {
 	svg.setAttribute("class", `${ouvePrefix}_svg`)
 	const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 	path1.setAttribute("d", "M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z");
-	path1.setAttribute("stroke", "#000000");
+	path1.setAttribute("stroke", "#018388");
 	path1.setAttribute("stroke-width", "2");
 	path1.setAttribute("stroke-linecap", "round");
 	path1.setAttribute("stroke-linejoin", "round");
 
-	const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-	path2.setAttribute("d", "M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z");
-	path2.setAttribute("stroke", "#000000");
-	path2.setAttribute("stroke-width", "2");
-	path2.setAttribute("stroke-linecap", "round");
-	path2.setAttribute("stroke-linejoin", "round");
-	path2.setAttribute("name", "path2")
+	const outerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+	outerPath.setAttribute("d", "M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z");
+	outerPath.setAttribute("stroke", "#018388");
+	outerPath.setAttribute("stroke-width", "2");
+	outerPath.setAttribute("stroke-linecap", "round");
+	outerPath.setAttribute("stroke-linejoin", "round");
+	outerPath.setAttribute("name", "outerPath")
 
 	if (watched) {
-		path2.style.fill = "yellow";
+		outerPath.style.fill = "#e3ff71";
 	}
 
 
-	svg.appendChild(path2);
+	svg.appendChild(outerPath);
 	svg.appendChild(path1);
 
 	return svg
@@ -38,16 +38,16 @@ function createSeenElement(watched) {
 function onClickCallback(collectionId, itemId, watched) {
 	//updating watched value to true
 	updateWatched(collectionId, itemId, watched);
-	let path2Item = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${itemId}`).children).filter(val => {
+	let outerPathItem = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${itemId}`).children).filter(val => {
 		if (val.attributes.name) {
-			return val.attributes.name.value == "path2"
+			return val.attributes.name.value == "outerPath"
 		}
 	})[0]
 	if (watched) {
-		path2Item.style.setProperty("fill", "yellow");
+		outerPathItem.style.setProperty("fill", "#e3ff71");
 	}
 	else {
-		path2Item.style.removeProperty("fill");
+		outerPathItem.style.removeProperty("fill");
 	}
 
 }
@@ -68,7 +68,7 @@ function appendViewdFeature(elements, collectionId) {
 			title.style.setProperty('margin-left', '10px');
 
 			//create listeners for click action, inner div clickable elements
-			let clickables = Array.from(val.children[0].children).filter(val => { if (val.className.include) { return val.className.includes('clickable') } });
+			let clickables = Array.from(val.children[0].children).filter(val => { if (val.className) { return val.className.includes('clickable') } });
 			clickables.forEach((val, index) => {
 				val.addEventListener('click', function () {
 					onClickCallback(collectionId, itemId, true);
@@ -108,8 +108,7 @@ function isWatched(collectionId, itemId) {
 
 function updateWatched(collectionId, itemId, val) {
 	let collectionObj = localStorage.getItem(ouvePrefix + collectionId) ? JSON.parse(localStorage.getItem(ouvePrefix + collectionId)) : new Object();
-
-	// collectionObj = localStorage.getItem(ouvePrefix + collectionId);
+	
 	collectionObj[ouvePrefix + itemId] = val;
 	localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
 }
@@ -163,13 +162,13 @@ function resetWatchedState() {
 			collectionObj[ouvePrefix + child.id] = false;
 
 
-			let path2Item = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${child.id}`).children).filter(val => {
+			let outerPathItem = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${child.id}`).children).filter(val => {
 				if (val.attributes.name) {
-					return val.attributes.name.value == "path2"
+					return val.attributes.name.value == "outerPath"
 				}
 			})[0]
 
-			path2Item.style.removeProperty("fill");
+			outerPathItem.style.removeProperty("fill");
 		})
 
 		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
@@ -184,7 +183,6 @@ function getCurrentCourseInfo() {
 	return { he_description, course_number }
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	// console.log("Message from popup (via background):", message);
 	if (message.message === 'resetWatched') {
 		resetWatchedState()
 		sendResponse({ response: "Done" }); // Optional: send response
@@ -193,9 +191,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		sendResponse(getCurrentCourseInfo())
 
 	}
-	// Process the data from the popup here
 
 });
-
-
-//document.getElementsByClassName("coursename_header")[0].getElementsByClassName("coursename")[0].innerText

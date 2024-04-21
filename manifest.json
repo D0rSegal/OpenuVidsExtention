@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Openu video tracker",
+  "name": "OpenU video tracker",
   "version": "1.0",
   "description": "Use to keep track of you viewed videos",
   "permissions": [
