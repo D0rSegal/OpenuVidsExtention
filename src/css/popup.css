@@ -1,0 +1,36 @@
+body {
+    background-color: #018388;
+    height: 80px;
+    width: 250px;
+}
+
+h2 {
+    color: #c9c8c8;
+}
+
+#courseInfo {
+    text-align: right;
+    color: #c9c8c8;
+}
+
+a.button {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #3c3c3c;
+    border: none;
+    border-radius: 4px;
+
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+        background-color: #605f5f;
+    }
+}
+
+.menu {
+    margin-left: 35%;
+}
