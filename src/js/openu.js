@@ -1,12 +1,14 @@
+const ouvePrefix = 'OUVE';
 
-function createSeenElement(){
+
+function createSeenElement(watched) {
 	const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	svg.setAttribute("width", "20px");
 	svg.setAttribute("height", "20px");
 	svg.setAttribute("viewBox", "0 0 24 24");
 	svg.setAttribute("fill", "none");
-
+	svg.setAttribute("class", `${ouvePrefix}_svg`)
 	const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 	path1.setAttribute("d", "M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z");
 	path1.setAttribute("stroke", "#000000");
@@ -20,34 +22,112 @@ function createSeenElement(){
 	path2.setAttribute("stroke-width", "2");
 	path2.setAttribute("stroke-linecap", "round");
 	path2.setAttribute("stroke-linejoin", "round");
-	path2.style = "stroke: gray;"
+	path2.setAttribute("name", "path2")
+
+	if (watched) {
+		path2.style.fill = "yellow";
+	}
+
 
 	svg.appendChild(path2);
 	svg.appendChild(path1);
-	svg.style = "margin-right: 10px;"
 
 	return svg
 }
 
-function appendViewdFeature(elements){
-	elements.forEach((val,index)=>{
-			let title = val.getElementsByClassName('ovc_playlist_title')[0];
-			let itemId = val.id;
-			let seenElement = createSeenElement();
-			title.appendChild(seenElement);
-		});
+function clickCallback(collectionId, itemId, watched) {
+	//updating watched value to true
+	updateWatched(collectionId, itemId, watched);
+	let path2Item = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${itemId}`).children).filter(val => {
+		if (val.attributes.name) {
+			return val.attributes.name.value == "path2"
+		}
+	})[0]
+	if (watched) {
+		path2Item.style.setProperty("fill", "yellow");
+	}
+	else {
+		path2Item.style.removeProperty("fill");
+	}
+
 }
 
-function getCollectionElement(){
+function appendViewdFeature(elements, collectionId) {
+	elements.forEach((val, index) => {
+
+		// create and append the view icon element
+		let itemId = val.id;
+		let watched = isWatched(collectionId, itemId)
+		let title = val.getElementsByClassName('ovc_playlist_title')[0];
+		let seenElement = createSeenElement(watched);
+		seenElement.id = `${ouvePrefix}_${collectionId}_${itemId}`;
+
+		title.style.setProperty('display', 'inline');
+		title.style.setProperty('margin-left', '10px');
+
+		//create listeners for click action, inner div clickable elements
+		let clickables = Array.from(val.children[0].children).filter(val => val.className.includes('clickable'));
+		clickables.forEach((val, index) => {
+			val.addEventListener('click', function () {
+				clickCallback(collectionId, itemId, true);
+			});
+		})
+
+		seenElement.addEventListener('click', function () {
+			clickCallback(collectionId, itemId, !isWatched(collectionId, itemId));
+		})
+		// title.appendChild(seenElement);
+		title.insertAdjacentElement('afterend', seenElement);
+	});
+}
+
+function initLocalStorage(collection) {
+	let collectionId = collection.id;
+	var collectionObj;
+
+	if (!localStorage.getItem(ouvePrefix + collectionId)) {
+		collectionObj = new Object();
+
+		Array.from(collection.children).forEach((child, index) => {
+			collectionObj[ouvePrefix + child.id] = false;
+		})
+
+		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
+	}
+
+}
+
+function isWatched(collectionId, itemId) {
+	let collectionObj = localStorage.getItem(ouvePrefix + collectionId) ? JSON.parse(localStorage.getItem(ouvePrefix + collectionId)) : new Object();
+	return collectionObj[ouvePrefix + itemId] ? collectionObj[ouvePrefix + itemId] : false;
+}
+
+function updateWatched(collectionId, itemId, val) {
+	let collectionObj = localStorage.getItem(ouvePrefix + collectionId) ? JSON.parse(localStorage.getItem(ouvePrefix + collectionId)) : new Object();
+
+	// collectionObj = localStorage.getItem(ouvePrefix + collectionId);
+	collectionObj[ouvePrefix + itemId] = val;
+	localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
+}
+
+function run(collection) {
+	let collectionId = collection.id;
+	initLocalStorage(collection);
+
+	let playlist_items = Array.from(collection.children);
+	appendViewdFeature(playlist_items, collectionId);
+}
+
+function getCollectionElements() {
 	var b = Array.from(document.getElementsByClassName("playlists"));
-	return b.filter(val => val.className === 'playlists')[0];
+	return b.filter(val => val.id.startsWith('collection'));
 }
 
-function main(){
-	let collectionElement = getCollectionElement();
-	let collectionId = collectionElement.id;
-	let ch = Array.from(collectionElement.children);
-	appendViewdFeature(ch)
+function main() {
+	let collectionElements = getCollectionElements();
+	collectionElements.forEach((collection, index) => {
+		run(collection)
+	})
 }
 
 main()
