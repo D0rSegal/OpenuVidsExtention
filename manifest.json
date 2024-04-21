@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Use to keep track of you viewed videos",
   "permissions": [
-    "activeTab"
+    
   ],
   "content_scripts": [
     {

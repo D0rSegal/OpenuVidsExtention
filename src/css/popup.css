@@ -23,12 +23,13 @@ a.button {
     background-color: #3c3c3c;
     border: none;
     border-radius: 4px;
-
+    margin-bottom: 5px;
     transition: all 0.2s ease-in-out;
 
     &:hover {
         background-color: #605f5f;
     }
+    
 }
 
 .menu {
