@@ -1,13 +1,17 @@
 body {
     background-color: #018388;
     height: 80px;
-    width: 200px;
+    width: 250px;
 }
 
 h2 {
     color: #c9c8c8;
 }
 
+#courseInfo {
+    text-align: right;
+    color: #c9c8c8;
+}
 
 a.button {
     display: inline-block;
@@ -28,6 +32,5 @@ a.button {
 }
 
 .menu {
-    margin-left: 30%;
-    /* margin-top: 2%; */
+    margin-left: 35%;
 }

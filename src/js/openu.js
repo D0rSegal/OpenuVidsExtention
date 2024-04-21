@@ -127,6 +127,31 @@ function getCollectionElements() {
 	return b.filter(val => val.id.startsWith('collection'));
 }
 
+
+function runOverCollections() {
+	let collectionElements = getCollectionElements();
+	collectionElements.forEach((collection, index) => {
+		updateCollection(collection)
+	})
+}
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+Array.from(document.getElementById('ovc_collections_list').children).forEach((val, index) => {
+	val.addEventListener('click', function () {
+		sleep(500).then(() => {
+			runOverCollections();
+		});
+	});
+})
+
+runOverCollections()
+
+
+// handle messages from popup
+
 function resetWatchedState() {
 	let collectionElements = getCollectionElements();
 	collectionElements.forEach((collection, index) => {
@@ -152,33 +177,25 @@ function resetWatchedState() {
 
 	})
 }
-function runOverCollections() {
-	let collectionElements = getCollectionElements();
-	collectionElements.forEach((collection, index) => {
-		updateCollection(collection)
-	})
+
+function getCurrentCourseInfo() {
+	let he_description = document.getElementsByClassName("coursename_header")[0].getElementsByClassName("coursename")[0].innerText;
+	let course_number = document.getElementsByClassName("coursename_header")[0].getElementsByClassName("header_number")[0].innerText.replace('-', '').replaceAll(' ', '');
+	return { he_description, course_number }
 }
-
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-Array.from(document.getElementById('ovc_collections_list').children).forEach((val, index) => {
-	val.addEventListener('click', function () {
-		sleep(500).then(() => {
-			runOverCollections();
-		});
-	});
-})
-
-runOverCollections()
-
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	// console.log("Message from popup (via background):", message);
 	if (message.message === 'resetWatched') {
 		resetWatchedState()
+		sendResponse({ response: "Done" }); // Optional: send response
+	}
+	if (message.message === 'getInfo') {
+		sendResponse(getCurrentCourseInfo())
+
 	}
 	// Process the data from the popup here
-	sendResponse({ response: "Done" }); // Optional: send response
+
 });
+
+
+//document.getElementsByClassName("coursename_header")[0].getElementsByClassName("coursename")[0].innerText

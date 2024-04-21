@@ -11,7 +11,19 @@ function reset() {
     });
 
 }
+function getCourseInfo() {
 
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        chrome.tabs.sendMessage(tab.id, { message: "getInfo" }, (response) => {
+            if (response) {
+                // alert(JSON.stringify(response));
+                let text = response.response.he_description + " - " + response.response.course_number
+                document.getElementById("courseInfo").innerText = text;
+            }
+        });
+    });
+}
 
 
 const resetButton = document.getElementById("resetButton");
@@ -19,3 +31,5 @@ resetButton.onclick = function () {
     // Your function logic here
     reset(); // Call your function
 };
+
+getCourseInfo();
