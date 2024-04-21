@@ -108,7 +108,7 @@ function isWatched(collectionId, itemId) {
 
 function updateWatched(collectionId, itemId, val) {
 	let collectionObj = localStorage.getItem(ouvePrefix + collectionId) ? JSON.parse(localStorage.getItem(ouvePrefix + collectionId)) : new Object();
-	
+
 	collectionObj[ouvePrefix + itemId] = val;
 	localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
 }
@@ -189,7 +189,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	}
 	if (message.message === 'getInfo') {
 		sendResponse(getCurrentCourseInfo())
-
 	}
-
 });

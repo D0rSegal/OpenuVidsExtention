@@ -17,7 +17,7 @@ function getCourseInfo() {
         const tab = tabs[0];
         chrome.tabs.sendMessage(tab.id, { message: "getInfo" }, (response) => {
             if (response) {
-                let text = response.response.he_description + " - " + response.response.course_number
+                let text = response.he_description + " - " + response.course_number;
                 document.getElementById("courseInfo").innerText = text;
             }
         });
