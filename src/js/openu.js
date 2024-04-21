@@ -127,6 +127,31 @@ function getCollectionElements() {
 	return b.filter(val => val.id.startsWith('collection'));
 }
 
+function resetWatchedState() {
+	let collectionElements = getCollectionElements();
+	collectionElements.forEach((collection, index) => {
+		let collectionId = collection.id;
+		var collectionObj;
+		collectionObj = new Object();
+
+		Array.from(collection.children).forEach((child, index) => {
+			collectionObj[ouvePrefix + child.id] = false;
+
+
+			let path2Item = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${child.id}`).children).filter(val => {
+				if (val.attributes.name) {
+					return val.attributes.name.value == "path2"
+				}
+			})[0]
+
+			path2Item.style.removeProperty("fill");
+		})
+
+		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
+
+
+	})
+}
 function runOverCollections() {
 	let collectionElements = getCollectionElements();
 	collectionElements.forEach((collection, index) => {
@@ -147,3 +172,13 @@ Array.from(document.getElementById('ovc_collections_list').children).forEach((va
 })
 
 runOverCollections()
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	// console.log("Message from popup (via background):", message);
+	if (message.message === 'resetWatched') {
+		resetWatchedState()
+	}
+	// Process the data from the popup here
+	sendResponse({ response: "Done" }); // Optional: send response
+});
