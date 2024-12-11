@@ -53,10 +53,11 @@ function onClickCallback(collectionId, itemId, watched) {
 }
 
 function appendViewdFeature(elements, collectionId) {
-	elements.forEach((val, index) => {
 
-		// create and append the view icon element
-		let itemId = val.id;
+	/** Thanks to how write sheilta we need to iterate the elemetns in reverse ( its a stack for them )*/
+	elements.reverse().forEach((val, index) => {
+
+		let itemId = index;
 		let watched = isWatched(collectionId, itemId)
 		seenElementId = `${ouvePrefix}_${collectionId}_${itemId}`;
 
@@ -92,8 +93,8 @@ function initLocalStorage(collection) {
 	if (!localStorage.getItem(ouvePrefix + collectionId)) {
 		collectionObj = new Object();
 
-		Array.from(collection.children).forEach((child, index) => {
-			collectionObj[ouvePrefix + child.id] = false;
+		Array.from(collection.children).reverse().forEach((child, index) => {
+			collectionObj[ouvePrefix + index] = false;
 		})
 
 		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
@@ -127,7 +128,7 @@ function getCollectionElements() {
 }
 
 
-function runOverCollections() {
+function itereateVideoCollections() {
 	let collectionElements = getCollectionElements();
 	collectionElements.forEach((collection, index) => {
 		updateCollection(collection)
@@ -138,42 +139,37 @@ function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-Array.from(document.getElementById('ovc_collections_list').children).forEach((val, index) => {
-	val.addEventListener('click', function () {
-		sleep(500).then(() => {
-			runOverCollections();
-		});
-	});
-})
 
-runOverCollections()
-
-
-// handle messages from popup
+//** These functions wil be for post interactions with popup */
 
 function resetWatchedState() {
+
 	let collectionElements = getCollectionElements();
+
 	collectionElements.forEach((collection, index) => {
 		let collectionId = collection.id;
 		var collectionObj;
 		collectionObj = new Object();
 
-		Array.from(collection.children).forEach((child, index) => {
-			collectionObj[ouvePrefix + child.id] = false;
+		let playlist_items = Array.from(collection.children);
 
+		playlist_items.reverse().forEach((item, item_index) => {
+			if (isWatched(collectionId, item_index)) {
+				// make the video unwatched
+				let outerPathItem = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${item_index}`).children).filter(val => {
+					if (val.attributes.name) {
+						return val.attributes.name.value == "outerPath"
+					}
 
-			let outerPathItem = Array.from(document.getElementById(`${ouvePrefix}_${collectionId}_${child.id}`).children).filter(val => {
-				if (val.attributes.name) {
-					return val.attributes.name.value == "outerPath"
-				}
-			})[0]
+				})[0]
+				outerPathItem.style.removeProperty("fill");
+				console.log(item);
+			}
 
-			outerPathItem.style.removeProperty("fill");
 		})
+		
 
-		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(collectionObj));
-
-
+		localStorage.setItem(ouvePrefix + collectionId, JSON.stringify(new Object()));
 	})
 }
 
@@ -182,10 +178,25 @@ function getCurrentCourseInfo() {
 	let course_number = document.getElementsByClassName("coursename_header")[0].getElementsByClassName("header_number")[0].innerText.replace('-', '').replaceAll(' ', '');
 	return { he_description, course_number }
 }
+
+
+
+
+Array.from(document.getElementById('ovc_collections_list').children).forEach((val, index) => {
+	val.addEventListener('click', function () {
+		sleep(500).then(() => {
+			itereateVideoCollections();
+		});
+	});
+})
+
+itereateVideoCollections()
+
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.message === 'resetWatched') {
 		resetWatchedState()
-		sendResponse({ response: "Done" }); // Optional: send response
+		sendResponse({ response: "Done" });
 	}
 	if (message.message === 'getInfo') {
 		sendResponse(getCurrentCourseInfo())

@@ -1,37 +1,67 @@
 body {
-    background-color: #018388;
-    height: 80px;
-    width: 250px;
-}
-
-h2 {
-    color: #c9c8c8;
-}
-
-#courseInfo {
-    text-align: right;
-    color: #c9c8c8;
-}
-
-a.button {
-    display: inline-block;
-    padding: 10px 20px;
-    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    background: #203e78;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    width: 300px;
+    height: auto;
+  }
+  
+  /* A container to hold everything nicely */
+  .container {
+    padding: 20px;
+  }
+  
+  /* Headings and text */
+  h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.4em;
+    color: #2c3e50;
     text-align: center;
-    text-decoration: none;
+    border-bottom: 1px solid #e2e2e2;
+    padding-bottom: 10px;
+  }
+  
+  h4 {
+    margin: 10px 0;
+    font-size: 1em;
+    text-align: center;
+    color: #34495e;
+  }
+  
+  /* Menu and button */
+  .menu {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .button {
+    display: inline-block;
+    background: #3498db;
     color: #fff;
-    background-color: #3c3c3c;
-    border: none;
+    text-decoration: none;
+    padding: 8px 14px;
     border-radius: 4px;
-    margin-bottom: 5px;
-    transition: all 0.2s ease-in-out;
-
-    &:hover {
-        background-color: #605f5f;
-    }
-    
-}
-
-.menu {
-    margin-left: 35%;
-}
+    font-weight: 600;
+    transition: background 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  }
+  
+  .button:hover {
+    background: #2980b9;
+  }
+  
+  /* Optional: Add some subtle animation or transition for hover states */
+  .button:active {
+    background: #1f6394;
+  }
+  
+  /* Make it look a bit like a card */
+  .container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  
